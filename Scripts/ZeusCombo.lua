@@ -1,4 +1,5 @@
---<<Zeus Ult Script by Raphaelpdc / edwynxero Version .1.0>>
+--<<Zeus Ult Script by Raphaelpdc / edwynxero Version 1.0>>
+--<<Updated Github>>
 
 --LIBRARIES
 require("libs.ScriptConfig")
