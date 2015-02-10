@@ -1,9 +1,12 @@
---<<Bristleback Script by Raphaelpdc Version 1.0>>
+--<<Bristleback Script by Raphaelpdc Version 1.5>>
+--<<1.5 Changes: Combo with time in Nasal to STACK>>
+
 
 -- LIBRARIES
 require("libs.Utils")
 require("libs.ScriptConfig")
 require("libs.TargetFind")
+require("libs.HeroInfo")
 
 -- CONFIG
 config = ScriptConfig.new()
@@ -20,14 +23,14 @@ local registered	 = false
 local range          = 700
 
 -- Menu screen
-local x,y            = 1250, 50
+local x,y            = 1420, 690
 local monitor        = client.screenSize.x/1600
 local F14            = drawMgr:CreateFont("F14","Franklin Gothic Medium",17,800) 
-local statusText     = drawMgr:CreateText(x*monitor,y*monitor,-1,"Combo-(".. string.char(ComboKey) ..")-OFF",F14) statusText.visible = false
+local statusText     = drawMgr:CreateText(x*monitor,y*monitor,0x00FF00FF,"Combo-(".. string.char(ComboKey) ..")-OFF",F14) statusText.visible = false
 
 -- Farm Screen
-local x1,y1          = 50, 50
-local farmText       = drawMgr:CreateText(x1*monitor,y1*monitor,-1,"AutoFarm Disabled - (" .. string.char(ToggleFarm) .. ")",F14) farmText.visible = false
+local x1,y1          = 1420, 670
+local farmText       = drawMgr:CreateText(x1*monitor,y1*monitor,0x00FF00FF,"AutoFarm Disabled - (" .. string.char(ToggleFarm) .. ")",F14) farmText.visible = false
 
 -- CODE
 local sleepMain     = 0
@@ -47,6 +50,7 @@ function onLoad()
 			statusText.visible = true
 			farmText.visible = true
 			script:RegisterEvent(EVENT_TICK,Main)
+			script:RegisterEvent(EVENT_TICK,OnFarm)
 			script:RegisterEvent(EVENT_KEY,Key)
 			script:UnregisterEvent(onLoad)
 		end
@@ -77,9 +81,6 @@ function Key(msg,code)
 	    	farmText.text  = "AutoFarm Disabled - (" .. string.char(ToggleFarm) .. ")"
 	    end
 	end
-	
-	
-
 end
 
 --Main Combo--
@@ -129,16 +130,25 @@ function Main(tick)
 	-- Do the combo! --
 	    if target and me.alive then
             if me:CanCast() then
-                if (Nasal:CanBeCasted() or Spray:CanBeCasted()) then
+                 if Nasal:CanBeCasted() and SleepCheck("Nasal") then
                    	me:SetPowerTreadsState(1)
                     me:SafeCastAbility(Nasal,target)
-                    me:SafeCastAbility(Spray)
 				    me:SafeCastItem("item_power_treads",true)
 				    me:SafeCastItem("item_power_treads",true)
-					Sleep(Nasal:FindCastPoint()*1000)
+					Sleep(4000,"Nasal")
 					return
 				end
 		    end
+		if target and me.alive then
+            if me:CanCast() then
+                 if Spray:CanBeCasted() then
+                   	me:SetPowerTreadsState(1)
+                    me:SafeCastAbility(Spray)
+				    me:SafeCastItem("item_power_treads",true)
+				    me:SafeCastItem("item_power_treads",true)
+					return
+				end
+		    end	
 		else
             if me:CanCast() then
                 if Treads and Treads:CanBeCasted() and Spray and Spray:CanBeCasted() then
@@ -148,6 +158,7 @@ function Main(tick)
 				    me:SafeCastItem("item_power_treads",true) 
 					Sleep(2500)
 					return
+				end
 			end
 		end
 	end
@@ -165,7 +176,7 @@ function OnFarm()
 		for i,v in ipairs(creeps) do	
 		    if GetDistance2D(v,me) < 625 and Spray:CanBeCasted() and me:CanCast() and (v.health > 0 and v.health < damage[Spray.level]) then
 			me:SetPowerTreadsState(1,true)
-			me:SafeCastAbility(Spray)
+			me:SafeCastAbility(Spray)	
 			me:SafeCastItem("item_power_treads",true)  
 			me:SafeCastItem("item_power_treads",true) 
             Sleep(250)
@@ -181,6 +192,7 @@ function onClose()
 		statusText.visible = false
 		farmText.visible = false
 		script:UnregisterEvent(Main)
+		script:UnregisterEvent(OnFarm)
 		script:UnregisterEvent(Key)
 		registered = false
 	end
