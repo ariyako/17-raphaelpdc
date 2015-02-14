@@ -1,6 +1,4 @@
---<<Bristleback Script by Raphaelpdc Version 1.5>>
---<<1.5 Changes: Combo with time in Nasal to STACK>>
-
+--<<Bristleback Script by Raphaelpdc Version 1.0>>
 
 -- LIBRARIES
 require("libs.Utils")
@@ -50,7 +48,6 @@ function onLoad()
 			statusText.visible = true
 			farmText.visible = true
 			script:RegisterEvent(EVENT_TICK,Main)
-			script:RegisterEvent(EVENT_TICK,OnFarm)
 			script:RegisterEvent(EVENT_KEY,Key)
 			script:UnregisterEvent(onLoad)
 		end
@@ -192,7 +189,6 @@ function onClose()
 		statusText.visible = false
 		farmText.visible = false
 		script:UnregisterEvent(Main)
-		script:UnregisterEvent(OnFarm)
 		script:UnregisterEvent(Key)
 		registered = false
 	end
